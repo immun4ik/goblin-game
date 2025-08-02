@@ -5,9 +5,8 @@ export default class GameController {
         this.score = 0;
         this.missedCount = 0;
         this.maxMissed = 5;
-        this.gameInterval = null;
+        this.gameTimeoutId = null; 
         this.goblinAppearanceDuration = 1000;
-        this.tickInterval = 1100; 
 
         this.board = new Board();
 
@@ -33,65 +32,92 @@ export default class GameController {
         this.updateUI();
         this.messageElement.textContent = '';
         this.restartButton.classList.add('hidden');
-        if (this.gameInterval) {
-            clearInterval(this.gameInterval);
+
+        if (this.gameTimeoutId) {
+            clearTimeout(this.gameTimeoutId);
+            this.gameTimeoutId = null;
         }
 
-        this.board.placeGoblin();
-        this.gameInterval = setInterval(() => this.tick(), this.tickInterval);
+        this.board.placeGoblin(); 
+        this.scheduleNextGoblinMove(); 
+
         console.log('Game Started!');
     }
 
     endGame() {
-        clearInterval(this.gameInterval);
-        this.gameInterval = null;
+        if (this.gameTimeoutId) {
+            clearTimeout(this.gameTimeoutId);
+            this.gameTimeoutId = null;
+        }
         this.board.removeGoblin();
-        this.messageElement.textContent = `Game Over! You missed ${this.maxMissed} goblins.Your score: ${this.score }`;
+        this.messageElement.textContent = `Game Over! You missed ${this.maxMissed} goblins.Your score: ${this.score }.`;
         this.restartButton.classList.remove('hidden');
         console.log('Game Over!');
     }
 
-    tick() {
-        if (this.board.activeCellIndex !== -1) {
-            this.handleMiss();
-        }
+scheduleNextGoblinMove() {
+    if (this.gameTimeoutId) {
+        clearTimeout(this.gameTimeoutId);
+    }
+    this.gameTimeoutId = setTimeout(() => {
+        this.moveGoblin(); 
+    }, this.goblinAppearanceDuration);
+}
+
+
+moveGoblin() {
+    if (this.board.activeCellIndex !== -1) {
+        this.handleMiss();
+    }
+
+    
+    if (this.missedCount >= this.maxMissed) {
+        this.endGame();
+        return; 
+    }
+
+    this.board.placeGoblin(); 
+    this.scheduleNextGoblinMove(); 
+}
+
+handleCellClick(event) {
+    const clickedCell = event.currentTarget;
+
+    if (!this.gameTimeoutId) {
+        return;
+    }
+
+    if (this.board.hasGoblin(clickedCell)) {
+        this.handleHit();
+        this.board.removeGoblin(); 
         if (this.missedCount < this.maxMissed) {
             this.board.placeGoblin();
+            this.scheduleNextGoblinMove(); 
         } else {
             this.endGame();
         }
+    } else {
+        this.handleMiss();
     }
+}
 
-    handleCellClick(event) {
-        const clickedCell = event.currentTarget;
-        if (this.gameInterval && this.board.hasGoblin(clickedCell)) {
-            this.handleHit();
-            this.board.removeGoblin();
-            if (this.missedCount < this.maxMissed) {
-                this.board.placeGoblin();
-            } else {
-                this.endGame();
-            }
-        }
-    }
+handleHit() {
+    this.score++;
+    this.updateUI();
+    console.log('Hit! Score:', this.score);
+}
 
-    handleHit() {
-        this.score++;
-        this.updateUI();
-        console.log('Hit! Score:', this.score);
+handleMiss() {
+    this.missedCount++;
+    this.updateUI();
+    console.log('Miss! Missed:', this.missedCount);
+    if (this.missedCount >= this.maxMissed) {
+        this.endGame();
     }
+}
 
-    handleMiss() {
-        this.missedCount++;
-        this.updateUI();
-        console.log('Miss! Missed:', this.missedCount);
-        if (this.missedCount >= this.maxMissed) {
-            this.endGame();
-        }
-    }
-
-    updateUI() {
-        this.scoreElement.textContent = this.score;
-        this.missedElement.textContent = `${this.missedCount} / ${this.maxMissed}`;
-    }
+updateUI() {
+    this.scoreElement.textContent = this.score;
+    this.missedElement.textContent = `${this.missedCount} / ${this.maxMissed}`;
+}
 }
