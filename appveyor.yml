@@ -1,25 +1,25 @@
-image: Ubuntu2204  
+image: Ubuntu2204  # образ для сборки
 
-stack: node 20  
+stack: node 20  # окружение
 
 branches:
-  only: 
-    - main
+  only:
+    - main  # ветка git
 
-cache: node_modules  
+cache: node_modules  # кеширование
 
 install:
-  - npm install
+  - npm install  # команда установки зависимостей
 
-build: off  
+build: off  # отключаем встроенную в appveyor систему сборки
 
 build_script:
-  - npm run build 
+  - npm run build   # команда сборки
 
 
-deploy_script:  
+deploy_script:  # скрипт развёртывания
   - git config --global credential.helper store
   - git config --global user.name AppVeyor
   - git config --global user.email ci@appveyor.com
   - echo "https://$GITHUB_TOKEN:x-oauth-basic@github.com" > "$HOME/.git-credentials"
-  - npx gh-pages -d dist -u "appveyor-bot <ci@appveyor>"
+  - npx push-dir --dir=dist --branch=gh-pages --force --verbose
