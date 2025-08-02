@@ -1,0 +1,99 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    cursor: url(./assets/hammer.e41502c672df50d96f8e.png) 16 16, auto;
+}
+
+.game-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-template-rows: repeat(4, 100px);
+    gap: 10px;
+    width: 440px;
+    height: 440px;
+    border: 2px solid #ccc;
+    margin: 0 auto;
+    background-color: #eee;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.goblin {
+    width: 90%;
+    height: 90%;
+    background-image: url(./assets/goblin.2dbd01ce16c0fa83cb67.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+}
+
+    .goblin.active {
+        opacity: 1;
+    }
+
+.game-message {
+    margin-top: 20px;
+    font-size: 1.5em;
+    color: #d9534f;
+    font-weight: bold;
+}
+
+#restart-button {
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 20px;
+}
+
+    #restart-button:hover {
+        background-color: #4cae4c;
+    }
+
+.hidden {
+    display: none;
+}
+
